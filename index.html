@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik Traffic Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            max-width: 800px;
+        }
+        .stats {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Statistik Traffic Website</h1>
+    <div class="container">
+        <p>🚀 Total Kunjungan: <span id="totalVisits">0</span></p>
+        <p>🌍 Kunjungan Unik: <span id="uniqueVisits">0</span></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Negara</th>
+                    <th>User-Agent</th>
+                    <th>Waktu</th>
+                </tr>
+            </thead>
+            <tbody id="visitorData"></tbody>
+        </table>
+    </div>
+
+    <script>
+        function fetchTraffic() {
+            fetch("traffic.json?t=" + new Date().getTime()) // Mencegah cache
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("totalVisits").innerText = data.total_visits;
+                    document.getElementById("uniqueVisits").innerText = data.unique_visits;
+
+                    let visitorTable = document.getElementById("visitorData");
+                    visitorTable.innerHTML = ""; // Hapus data lama
+
+                    data.visitors.slice(-10).reverse().forEach(visitor => {
+                        let row = `<tr>
+                            <td>${visitor.ip}</td>
+                            <td>${visitor.country}</td>
+                            <td>${visitor.user_agent}</td>
+                            <td>${visitor.time}</td>
+                        </tr>`;
+                        visitorTable.innerHTML += row;
+                    });
+                })
+                .catch(error => console.error("Gagal mengambil data:", error));
+        }
+
+        setInterval(fetchTraffic, 2000); // Ambil data setiap 2 detik
+        fetchTraffic(); // Ambil data saat pertama kali load
+    </script>
+</body>
+</html>
